@@ -40,9 +40,12 @@ png(file = "./results/plot2.png", width = 480, height = 480)
 
 
 # draw the histogram
-hpc <- transform(hpc, Date = as.Date(Date,"%d/%m/%y"))
 
-plot(ts(hpc$Global_active_power, frequency = 1440), ylab="Global Active Power (kilowatts)")
+hpc$Date<- as.Date(hpc$Date,"%d/%m/%Y")
+hpc$Time <- strptime(paste(hpc$Date,hpc$Time),format = "%Y-%m-%d %H:%M:%S")
+
+with(hpc, plot(Time,Global_active_power,type="l", 
+              xlab="", ylab="Global Active Power (kilowatts)"))
 
 
 # close the device

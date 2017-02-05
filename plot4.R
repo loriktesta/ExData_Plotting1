@@ -38,7 +38,8 @@ png(file = "./results/plot4.png", width = 480, height = 480)
 
 
 # draw the histogram
-hpc <- transform(hpc, Date = as.Date(Date,"%d/%m/%y"))
+hpc$Date<- as.Date(hpc$Date,"%d/%m/%Y")
+hpc$Time <- strptime(paste(hpc$Date,hpc$Time),format = "%Y-%m-%d %H:%M:%S")
 
 par(mfrow=c(2,2)) 
 
@@ -52,31 +53,33 @@ hist(hpc$Global_active_power,
 
 
 # 2. plot ts
-plot.ts(ts(hpc$Voltage, frequency = 1440), 
-        plot.type = "single",
-        ylab="Voltage",
-        xlab="datetime")
+with(hpc, plot(Time,Global_active_power,type="l", 
+               xlab="", ylab="Global Active Power (kilowatts)"))
 
 
 # 3. plot multiple ts
-sm1 <- ts(hpc$Sub_metering_1, frequency = 1440)
-sm2 <- ts(hpc$Sub_metering_2, frequency = 1440)
-sm3 <- ts(hpc$Sub_metering_3, frequency = 1440)
+with(hpc, {plot(Time,Sub_metering_1,type="l", 
+                xlab="", ylab="Energy sub metering")
+        lines(Time,Sub_metering_2,col="red")
+        lines(Time,Sub_metering_3,col="blue")
+})
 
-ts.plot(sm1,sm2,sm3,plot.type="single", 
-        gpars =list(ylab="Energy sub metering", col=c("black","red","blue")))
+legend("topright", pch="-", col=c("black","red","blue"), 
+       legend = c("Sub_metering_1","Sub_metering_2","Sub_metering_3"))
+
 
 # 4. plot ts
-plot.ts(ts(hpc$Global_reactive_power, frequency = 1440), 
-        plot.type = "single",
-        ylab="Global_reactive_power",
-        xlab="datetime")
+with(hpc, plot(Time,Global_reactive_power,type="l", 
+               xlab="", ylab="Global_reactive_power"))
+
+# plot.ts(ts(hpc$Global_reactive_power, frequency = 1440), 
+#         plot.type = "single",
+#         ylab="Global_reactive_power",
+#         xlab="datetime")
 
 # close the device
 dev.off()
 
-rm("sm1")
-rm("sm2")
-rm("sm3")
+# Clean up the files
 rm("cols")
 rm("hpc")

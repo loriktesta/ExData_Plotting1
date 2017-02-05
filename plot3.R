@@ -38,15 +38,15 @@ png(file = "./results/plot3.png", width = 480, height = 480)
 
 
 # draw the histogram
-hpc <- transform(hpc, Date = as.Date(Date,"%d/%m/%y"))
-hpc <- select(hpc, -Time)
+hpc$Date<- as.Date(hpc$Date,"%d/%m/%Y")
+hpc$Time <- strptime(paste(hpc$Date,hpc$Time),format = "%Y-%m-%d %H:%M:%S")
 
-sm1 <- ts(hpc$Sub_metering_1, frequency = 1440)
-sm2 <- ts(hpc$Sub_metering_2, frequency = 1440)
-sm3 <- ts(hpc$Sub_metering_3, frequency = 1440)
+with(hpc, {plot(Time,Sub_metering_1,type="l", 
+               xlab="", ylab="Energy sub metering")
+  lines(Time,Sub_metering_2,col="red")
+  lines(Time,Sub_metering_3,col="blue")
+})
 
-ts.plot(sm1,sm2,sm3,plot.type="single", 
-        gpars =list(ylab="Energy sub metering", col=c("black","red","blue")))
 legend("topright", pch="-", col=c("black","red","blue"), 
        legend = c("Sub_metering_1","Sub_metering_2","Sub_metering_3"))
 
@@ -55,8 +55,5 @@ legend("topright", pch="-", col=c("black","red","blue"),
 dev.off()
 
 # Clean up the files
-rm("sm1")
-rm("sm2")
-rm("sm3")
-rm("cols")
-rm("hpc")
+ rm("cols")
+ rm("hpc")
